@@ -17,12 +17,64 @@ model User{
   id String @id @default(uuid())
   name String
   role Role @default(BASIC)
-  email String
+  email String @unique
   isVerified Boolean @default(false)
-  
+  password String?
+  provider ProviderType @default(CREDENTIALS) //OAuth
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  repos String[]
+
+  @@index([email,id])
 }
 
-enum Role{
+model Repository{
+  id String @id @default(uuid())
+  name String
+  fullName String? // anmol/hikariCI
+  githubId Int? // repo id from GitHub
+  owner String? // username or org
+  userId String // reference to db User
+  webhookUrl String?
+  webhooks String [] // WebHook
+}
+
+
+// github webhook data
+model WebHook {
+  id String @id @default(uuid())
+  provider  WebHook_provider
+  userid String
+  payload Json
+  eventType  String   // "push", "pull_request", "deployment_status"
+  action     String   // opened", "closed", "success"
+  actionId  String
+  webhook_uuid String // url
+}
+
+
+
+enum WebHook_provider {
+  GITHUB
+  VERCEL
+}
+
+
+enum ProviderType {
+  CREDENTIALS
+  GOOGLE
+  GITHUB
+}
+
+enum Role {
   BASIC
   ADMIN
 }
+
+
+
+// issues : x-github-event
+// action : req.body.action
+// title : req.body.issue.title
+// 
+

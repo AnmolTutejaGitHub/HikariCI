@@ -14,6 +14,13 @@ app.use(cors({
 
 app.use(express.json());
 
+app.post(`/webhook/test`,async(req,res)=>{
+    const eventType = req.headers['x-github-event'];
+    console.log(eventType);
+    console.log(req.body);
+    res.status(200).send({success : true});
+})
+
 app.listen(PORT,()=>{
     console.log(`server is listening on port ${PORT}`)
 })
